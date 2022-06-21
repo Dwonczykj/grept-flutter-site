@@ -5,7 +5,7 @@ A Flutter Landing Page
 <table>
     <tr>
         <th> Fullscreen Web View   </th>
-        <th> Reponsive Web View  </th>
+        <th> Responsive Web View  </th>
     </tr>
     <tr>
         <td>
