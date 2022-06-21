@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../utils/responsiveLayout.dart';
 
 class SendBtn extends StatelessWidget {
@@ -22,7 +23,7 @@ class SendBtn extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () {},
+            onTap: () {}, //TODO: Connect this button to Firebase
             child: Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
