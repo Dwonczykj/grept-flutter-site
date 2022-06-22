@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
+import 'utils/responsiveLayout.dart';
 // import 'package:flutter_web/material.dart';
 import 'widgets/navbar.dart';
-import 'utils/responsiveLayout.dart';
 import 'widgets/search.dart';
 
 void main() {
@@ -48,6 +49,11 @@ class Body extends StatelessWidget {
 class LargeChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    const listTextStyle = TextStyle(
+        fontSize: 60,
+        fontWeight: FontWeight.bold,
+        fontFamily: "Montserrat-Regular",
+        color: Color(0xFF111111));
     return SizedBox(
       height: 600,
       child: Stack(
@@ -57,7 +63,7 @@ class LargeChild extends StatelessWidget {
             alignment: Alignment.centerRight,
             widthFactor: .6,
             // <a href="https://www.freepik.com/free-photos-vectors/people">People vector created by stories - www.freepik.com</a>
-            child: Image.network("assets/cat-lady.png", scale: .85),
+            child: Image.network("assets/phone-qr.png", scale: .85),
           ),
           FractionallySizedBox(
               alignment: Alignment.centerLeft,
@@ -69,7 +75,7 @@ class LargeChild extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Mingalarbar!",
+                          "GRePT",
                           style: TextStyle(
                               fontSize: 60,
                               fontWeight: FontWeight.bold,
@@ -78,12 +84,12 @@ class LargeChild extends StatelessWidget {
                         ),
                         RichText(
                           text: TextSpan(
-                            text: "Say Hi to ",
+                            text: "Welcome to the Green Rewards Point",
                             style: TextStyle(
                                 fontSize: 60, color: Color(0xFF8591B0)),
                             children: [
                               TextSpan(
-                                  text: "🐱",
+                                  text: "🌏",
                                   style: TextStyle(
                                     fontSize: 60,
                                     fontWeight: FontWeight.bold,
@@ -92,14 +98,38 @@ class LargeChild extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12.0, top: 20),
-                          child: Text("LET'S FLY TO MARS"),
-                        ),
                         SizedBox(
                           height: 40,
                         ),
-                        Search()
+                        Search(),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 12.0, top: 20),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     mainAxisAlignment: MainAxisAlignment.start,
+                        //     children: [
+                        //       SizedBox(
+                        //         height: 12.0,
+                        //         child: Text("1. Spend accross brands!",
+                        //             style: listTextStyle),
+                        //       ),
+                        //       SizedBox(
+                        //         height: 12.0,
+                        //         child: Text(
+                        //             "2. Cheaper for greener products and services",
+                        //             style: listTextStyle),
+                        //       ),
+                        //       SizedBox(
+                        //           height: 12.0,
+                        //           child: Text("3. No loyalty card!",
+                        //               style: listTextStyle)),
+                        //     ],
+                        //   ),
+                        // )
+                        // child: Text("Hello")),
                       ])))
         ],
       ),

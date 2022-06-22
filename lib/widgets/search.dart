@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:webapp/utils/colors_palette.dart';
+
 import '../utils/responsiveLayout.dart';
 import 'sendbtn.dart';
 
@@ -15,7 +17,7 @@ class Search extends StatelessWidget {
         child: Container(
             height: 60,
             decoration: BoxDecoration(
-                color: Colors.white,
+                color: color4,
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(

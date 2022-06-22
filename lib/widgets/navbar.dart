@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/responsiveLayout.dart';
+import 'package:webapp/utils/colors_palette.dart';
 
 class NavBar extends StatelessWidget {
   // Navigation Bar Items
@@ -32,59 +32,61 @@ class NavBar extends StatelessWidget {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     gradient: LinearGradient(colors: [
-                      Color(0xFFC86DD7),
-                      Color(0xFF00A895),
+                      color4,
+                      color2,
                     ], begin: Alignment.bottomRight, end: Alignment.topLeft)),
                 child: Center(
-                  child: Text(
-                    "🐈",
-                    style: TextStyle(fontSize: 30, color: Colors.white),
-                  ),
+                    child: Image.network("assets/reduced-green-300x233.png",
+                        width: 50, height: 50)
+                    // child: Text(
+                    //   "",
+                    //   style: TextStyle(fontSize: 30, color: Colors.white),
+                    // ),
                 ),
               ),
               SizedBox(
                 width: 16,
                 // child: Text("ttest"),
               ),
-              Text("Flying Meows", style: TextStyle(fontSize: 26))
+              Text("GRePT Wallet", style: TextStyle(fontSize: 26))
             ],
           ),
           // Responsive Layout
-          if (!ResponsiveLayout.isSmallScreen(context))
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[...navItem()]..add(InkWell(
-                    child: Container(
-                      margin: EdgeInsets.only(left: 20),
-                      width: 120,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [Color(0xFFC86DD7), Color(0xFF00A895)],
-                              begin: Alignment.bottomRight,
-                              end: Alignment.topLeft),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Color(0xFF6078ea).withOpacity(.3),
-                                offset: Offset(0, 8),
-                                blurRadius: 8)
-                          ]),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Center(
-                          child: Text("Login",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  letterSpacing: 1,
-                                  fontFamily: "Montserrat-Bold")),
-                        ),
-                      ),
-                    ),
-                  )))
-          else
-            Image.network("assets/icons8-menu.png", width: 50, height: 50)
+          // if (!ResponsiveLayout.isSmallScreen(context))
+          //   Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //       children: <Widget>[...navItem()]..add(InkWell(
+          //           child: Container(
+          //             margin: EdgeInsets.only(left: 20),
+          //             width: 120,
+          //             height: 40,
+          //             decoration: BoxDecoration(
+          //                 gradient: LinearGradient(
+          //                     colors: [color6, color2],
+          //                     begin: Alignment.bottomRight,
+          //                     end: Alignment.topLeft),
+          //                 borderRadius: BorderRadius.circular(20),
+          //                 boxShadow: [
+          //                   BoxShadow(
+          //                       color: color3.withOpacity(.3),
+          //                       offset: Offset(0, 8),
+          //                       blurRadius: 8)
+          //                 ]),
+          //             child: Material(
+          //               color: Colors.transparent,
+          //               child: Center(
+          //                 child: Text("Login",
+          //                     style: TextStyle(
+          //                         color: color4,
+          //                         fontSize: 18,
+          //                         letterSpacing: 1,
+          //                         fontFamily: "Montserrat-Bold")),
+          //               ),
+          //             ),
+          //           ),
+          //         )))
+          // else
+          //   Image.network("assets/icons8-menu.png", width: 50, height: 50)
         ],
       ),
     );
