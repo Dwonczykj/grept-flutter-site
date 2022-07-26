@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <link rel="shortcut icon" type="image/png" href="green-reduced-icon.png" />
 
   <title>webapp</title>
   <link rel="manifest" href="manifest.json">
@@ -29,5 +29,28 @@
     }
   </script>
   <script src="main.dart.js" type="application/javascript"></script>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyD39sRS-5q-29cAOL1QVMVmwcs13-ZJYNQ",
+      authDomain: "grept-site.firebaseapp.com",
+      projectId: "grept-site",
+      storageBucket: "grept-site.appspot.com",
+      messagingSenderId: "194194217416",
+      appId: "1:194194217416:web:1e344cff812b1bfd0508fd",
+      measurementId: "G-QB2WLSQD3C"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
 </body>
 </html>

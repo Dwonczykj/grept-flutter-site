@@ -2,11 +2,12 @@
 
 source ~/.zshrc
 
-fluttervm build web
+# fluttervm build web
 
 # Copy contents of build/web/ folder to publish/web/
 find ../publish-grept-site/web -not -path "../publish-grept-site/web/.git/*" -type f -exec rm -f {} \;
 cp -v -R ./build/web ../publish-grept-site
+cp -v -R ./assets/* ../publish-grept-site/web/assets
 
 # cd to git directory
 # $CURRENT_DIR=pwd
