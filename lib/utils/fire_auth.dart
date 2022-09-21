@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:webapp/firebase_options.dart';
 
 class FireAuth {
   // For registering a new user
@@ -65,5 +67,34 @@ class FireAuth {
     User? refreshedUser = auth.currentUser;
 
     return refreshedUser;
+  }
+
+  static Future<User?> signInAnonymously() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user;
+
+    try {
+      UserCredential userCredential = await auth.signInAnonymously();
+      user = userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+    }
+    return user;
+  }
+
+  static Future<FirebaseApp> initializeFirebase() async {
+    // final firebaseConfig = DefaultFirebaseConfig.platformOptions;
+    final firebaseConfig = DefaultFirebaseOptions.currentPlatform;
+    FirebaseApp firebaseApp =
+        await Firebase.initializeApp(options: firebaseConfig);
+
+    try {
+      final user = await FireAuth.signInAnonymously(); //TODO: Set to Bloc state
+
+      return firebaseApp;
+    } catch (err) {
+      print('Error (Unable to signin to firebase anon): $err');
+    }
+    return firebaseApp;
   }
 }

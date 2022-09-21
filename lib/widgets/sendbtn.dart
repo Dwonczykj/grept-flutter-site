@@ -34,6 +34,9 @@ class _SendBtnState extends State<SendBtn> {
                 backgroundBlendMode: BlendMode.lighten)
             : null,
         child: InkWell(
+          onTap: () {
+            print('Parent INK Tapped...');
+          },
           child: Container(
             height: 40,
             decoration: BoxDecoration(
@@ -51,7 +54,10 @@ class _SendBtnState extends State<SendBtn> {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: widget.onTap,
+                onTap: () {
+                  print('child INK tapped');
+                  widget.onTap();
+                },
                 onHover: (hovering) {
                   if (hovering && widget.disabled) {
                     setState(() {

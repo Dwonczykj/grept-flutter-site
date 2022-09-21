@@ -8,9 +8,15 @@ import 'sendbtn.dart';
 
 class Search extends StatefulWidget {
   TextEditingController emailController;
+  String inputHint;
+  String buttonLabel;
+  Future<String> Function() onSubmit;
 
   Search({
     required this.emailController,
+    required this.onSubmit,
+    required this.buttonLabel,
+    required this.inputHint,
   });
 
   @override
@@ -52,7 +58,7 @@ class _SearchState extends State<Search> {
                         child: TextField(
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Your Email Address',
+                              hintText: widget.inputHint,
                               errorStyle: TextStyle(
                                 color: Color.fromARGB(255, 244, 14, 14),
                               ),
@@ -63,32 +69,16 @@ class _SearchState extends State<Search> {
                       Expanded(
                         flex: 2,
                         child: SendBtn(
-                          disabled: (widget.emailController.text == ""),
-                          label: "Notify",
+                          disabled:
+                              false, //(widget.emailController.text == ""),
+                          label: ResponsiveLayout.isSmallScreen(context)
+                              ? ''
+                              : widget.buttonLabel,
                           onTap: () async {
-                            // final response =
-                            //     await widget.dio.post(followLink, data: <String, dynamic>{
-                            //   'email_address': widget.email,
-                            // });
-                            appStateManager.setLoading(true);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Processing Data')),
-                            );
-                            final response =
-                                await appStateManager.subscribeUser(
-                                    email: widget.emailController.text);
-                            appStateManager.setLoading(false);
-                            String status = 'Registered successfully';
-                            if (response.error != '') {
-                              status = response.error;
-                              setState(() {
-                                subscribeError = response.error;
-                              });
-                            }
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              //TODO: Switch to Flushbar
-                              SnackBar(content: Text(status)),
-                            );
+                            final error = await widget.onSubmit();
+                            setState(() async {
+                              subscribeError = error;
+                            });
                           },
                         ),
                       ),

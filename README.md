@@ -20,6 +20,8 @@ A landing page for the GRePT Green Rewards Platform
 Ref. Tutorial  
 [Flutter Web : Responsive Landing Page - Speed Code](https://www.youtube.com/watch?v=87cz-ihAJ-8)  
 
+Forked from [flying-meows](https://github.com/flying-meows/flutter-landing-page)
+
 `$flutter build web`  
 
 - files from /build/web folder are moved to /docs so that the Github can be built.  

@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "569201134397",
+    "firebase_url": "https://vegi-app-uk-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "vegi-app-uk",
+    "storage_bucket": "vegi-app-uk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569201134397:android:aafb0ba5340317fcbd5354",
+        "android_client_info": {
+          "package_name": "com.example.temp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569201134397-a0et1ru2nli7v8r59ms4em3i747kupt3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAecelaKXItfnAKsrVrv1CsTrv23vsUb3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569201134397-a0et1ru2nli7v8r59ms4em3i747kupt3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "569201134397-dl5fp64nsht4dj9ijdptq671ok0n399a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.temp2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569201134397:android:def45ef8c94b2531bd5354",
+        "android_client_info": {
+          "package_name": "com.example.temp2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569201134397-a0et1ru2nli7v8r59ms4em3i747kupt3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAecelaKXItfnAKsrVrv1CsTrv23vsUb3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569201134397-a0et1ru2nli7v8r59ms4em3i747kupt3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "569201134397-dl5fp64nsht4dj9ijdptq671ok0n399a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.temp2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569201134397:android:84f3a2690f30952cbd5354",
+        "android_client_info": {
+          "package_name": "com.itsaboutpeepl.peepl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569201134397-a0et1ru2nli7v8r59ms4em3i747kupt3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAecelaKXItfnAKsrVrv1CsTrv23vsUb3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569201134397-a0et1ru2nli7v8r59ms4em3i747kupt3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "569201134397-dl5fp64nsht4dj9ijdptq671ok0n399a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.temp2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

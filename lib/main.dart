@@ -1,27 +1,69 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:webapp/common/links.dart';
+import 'package:webapp/features/get_vegi/get_vegi_screen.dart';
+import 'package:webapp/models/subscription_result.dart';
 import 'package:webapp/state_managers/app_state_manager.dart';
 import 'package:webapp/utils/colors_palette.dart' hide Colors;
-import 'package:webapp/widgets/unsubscribe.dart';
+import 'package:webapp/utils/fire_auth.dart';
+import 'package:webapp/widgets/error_screen.dart';
 
+import 'features/sell_on_vegi/sell_vegi_screen.dart';
 import 'utils/responsiveLayout.dart';
 // import 'package:flutter_web/material.dart';
 import 'widgets/navbar.dart';
 import 'widgets/search.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
-    title: 'GRePT - Green Rewards Platform',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      primarySwatch: Colors.lightBlue,
-      backgroundColor: color1,
-    ),
-    home: HomePage(),
-  ));
+  await FireAuth.initializeFirebase();
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  App({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: _router,
+      title: 'vegiapp',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.lightGreen,
+        backgroundColor: color1,
+      ),
+    );
+  }
+
+  final GoRouter _router = GoRouter(
+    routes: <GoRoute>[
+      GoRoute(
+        path: '/',
+        builder: (BuildContext context, GoRouterState state) {
+          return HomePage();
+        },
+      ),
+      GoRoute(
+        path: '/sell-on-vegi',
+        builder: (BuildContext context, GoRouterState state) {
+          return SellVegiScreen();
+        },
+      ),
+      GoRoute(
+        path: '/get-vegi',
+        builder: (BuildContext context, GoRouterState state) {
+          return GetVegiScreen();
+        },
+      ),
+    ],
+    errorBuilder: (context, state) => ErrorScreen(state.error),
+  );
 }
 
 class HomePage extends StatefulWidget {
@@ -30,19 +72,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _appStateManager = AppStateManager();
-
-  Future<FirebaseApp> _initializeFirebase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
-
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      _appStateManager.isRegistered = true;
-    }
-
-    return firebaseApp;
-  }
+  final _appStateManager = AppStateManager(
+    smallVegiKey: GlobalKey(debugLabel: 'SmallChild-Vegi-TitleText'),
+    largeVegiKey: GlobalKey(debugLabel: 'LargeChild-Vegi-TitleText'),
+  );
+  final smallVegiKey = GlobalKey(debugLabel: 'SmallChild-Vegi-TitleText');
+  final largeVegiKey = GlobalKey(debugLabel: 'LargeChild-Vegi-TitleText');
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +87,8 @@ class _HomePageState extends State<HomePage> {
           create: (context) => _appStateManager,
         ),
       ],
-      child: FutureBuilder(
-          future: _initializeFirebase(),
+      child: FutureBuilder<User?>(
+          future: FireAuth.signInAnonymously(),
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return Center(
@@ -61,22 +96,144 @@ class _HomePageState extends State<HomePage> {
               );
             }
             return Container(
-                // decoration: BoxDecoration(
-                //   gradient: LinearGradient(
-                //     colors: [
-                //       Color(0xFFFFFBFF),
-                //       Color(0xFF3023AE),
-                //     ])),
+                // foregroundDecoration: const BoxDecoration(
+                //   image: DecorationImage(
+                //       image: NetworkImage(
+                //           'https://p6.storage.canalblog.com/69/50/922142/85510911_o.png'),
+                //       fit: BoxFit.fill),
+                // ),
+                // decoration: const BoxDecoration(
+                //   image: DecorationImage(
+                //       alignment: Alignment(-.2, 0),
+                //       opacity: 0.25,
+                //       image:
+                //           NetworkImage("assets/global_warming_house_fire.jpg"),
+                //       fit: BoxFit.cover),
+                // ),
+                padding: EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFFFFBFF),
+                      color10,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
                 child: Scaffold(
-              backgroundColor: color10,
-              body: SingleChildScrollView(
-                  child: Column(
-                children: <Widget>[NavBar(), Body()],
-              )),
-            ));
+                  backgroundColor: Colors.transparent,
+                  body: snapshot.connectionState != ConnectionState.done
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                          children: <Widget>[
+                            NavBar(),
+                            Body(),
+                            if (_appStateManager.appLoading)
+                              CircularProgressIndicator(),
+                          ],
+                        )),
+                ));
           }),
     );
   }
+}
+
+Future<String> subscribeEmail(
+    {required AppStateManager appStateManager,
+    required BuildContext context,
+    required String email}) async {
+  return _submitEmail(
+      appStateManager: appStateManager,
+      context: context,
+      email: email,
+      submit: () async {
+        return appStateManager.subscribeUser(email: email);
+      });
+}
+
+Future<String> unsubscribeEmail(
+    {required AppStateManager appStateManager,
+    required BuildContext context,
+    required String email}) async {
+  return _submitEmail(
+      appStateManager: appStateManager,
+      context: context,
+      email: email,
+      submit: () async {
+        return appStateManager.unsubscribeUser(email: email);
+      });
+}
+
+Future<String> _submitEmail({
+  required AppStateManager appStateManager,
+  required BuildContext context,
+  required String email,
+  required Future<SubscriptionResult> Function() submit,
+}) async {
+  // final response =
+  //     await widget.dio.post(followLink, data: <String, dynamic>{
+  //   'email_address': widget.email,
+  // });
+  appStateManager.setLoading(true);
+  Flushbar(
+    duration: Duration(seconds: 2),
+    boxShadows: [
+      BoxShadow(
+        offset: Offset(0.5, 0.5),
+        blurRadius: 5,
+      ),
+    ],
+    titleText: Text(
+      'Loading',
+      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+    ),
+    messageText: Text(
+      'Processing Email',
+      style: TextStyle(
+        fontSize: 14.0,
+      ),
+    ),
+    backgroundColor: Theme.of(context).bottomAppBarColor,
+    margin: EdgeInsets.only(top: 8, right: 8, left: 8, bottom: 100),
+    borderRadius: BorderRadius.all(
+      Radius.circular(8.0),
+    ),
+    icon: SvgPicture.asset(
+      'assets/failed_icon.svg',
+      width: 20,
+      height: 20,
+    ),
+  )..show(context);
+  // ScaffoldMessenger.of(context).showSnackBar(
+  //   const SnackBar(content: Text('Processing Data')),
+  // );
+  final response = await submit();
+
+  appStateManager.setLoading(false);
+  String status = 'Registered successfully';
+  String subscribeError = response.error;
+  if (response.error != '') {
+    status = response.error;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(status),
+        backgroundColor: color1,
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      //TODO: Switch to Flushbar
+      SnackBar(
+        content: Text(status),
+        backgroundColor: Colors.redAccent[500],
+      ),
+    );
+  }
+  return subscribeError;
 }
 
 class Body extends StatelessWidget {
@@ -94,146 +251,511 @@ class LargeChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const listTextStyle = TextStyle(
-        fontSize: 60,
-        fontWeight: FontWeight.bold,
-        fontFamily: "Montserrat-Regular",
-        color: Color(0xFF111111));
+    // const listTextStyle = TextStyle(
+    //     fontSize: 60,
+    //     fontWeight: FontWeight.bold,
+    //     fontFamily: "Montserrat-Regular",
+    //     color: Color(0xFF111111));
     return Consumer<AppStateManager>(
         builder: (context, appStateManager, child) {
-      return SizedBox(
-        height: 600,
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            FractionallySizedBox(
-              alignment: Alignment.centerRight,
-              widthFactor: .6,
-              // <a href="https://www.freepik.com/free-photos-vectors/people">People vector created by stories - www.freepik.com</a>
-              child: Image.network("assets/phone-qr.png", scale: .85),
-            ),
-            FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: .6,
-                child: Padding(
-                    padding: EdgeInsets.only(left: 48),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+      return SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 600,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    FractionallySizedBox(
+                      alignment: Alignment.centerRight,
+                      widthFactor: .6,
+                      // <a href="https://www.freepik.com/free-photos-vectors/people">People vector created by stories - www.freepik.com</a>
+                      child: Image.network("assets/phone-qr.png", scale: .85),
+                    ),
+                    FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: .6,
+                        child: Padding(
+                            padding: EdgeInsets.only(left: 48),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    "GRePT",
+                                    style: TextStyle(
+                                        fontSize: 60,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Montserrat-Regular",
+                                        color: color9),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text:
+                                          "Welcome to the Green Rewards Point",
+                                      style: TextStyle(
+                                          fontSize: 60,
+                                          color: Color(0xFF8591B0)),
+                                      children: [
+                                        TextSpan(
+                                            text: "🌏",
+                                            style: TextStyle(
+                                              fontSize: 60,
+                                              fontWeight: FontWeight.bold,
+                                              // color: Colors.black54
+                                            ))
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: "",
+                                      style: TextStyle(
+                                          fontSize: 24,
+                                          color:
+                                              Color.fromARGB(255, 45, 47, 50)),
+                                      children: [
+                                        TextSpan(
+                                            text:
+                                                "Subscribe below for early access to ",
+                                            style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                                color: color7)),
+                                        TextSpan(
+                                            text: "green discounts",
+                                            style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                                color: color10)),
+                                        TextSpan(
+                                            text: " in your wallet!",
+                                            style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                                color: color7)),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                  !appStateManager.isRegistered
+                                      ? Search(
+                                          emailController: _emailController,
+                                          inputHint: 'Email',
+                                          buttonLabel: 'Notify',
+                                          onSubmit: () async {
+                                            return subscribeEmail(
+                                                appStateManager:
+                                                    appStateManager,
+                                                context: context,
+                                                email: _emailController.text);
+                                          },
+                                        )
+                                      : Search(
+                                          emailController: _emailController,
+                                          inputHint: 'Email',
+                                          buttonLabel: 'Unsubscribe',
+                                          onSubmit: () async {
+                                            return unsubscribeEmail(
+                                                appStateManager:
+                                                    appStateManager,
+                                                context: context,
+                                                email: _emailController.text);
+                                          },
+                                        ),
+      
+                                  // RichText(
+                                  //   text: TextSpan(
+                                  //     text:
+                                  //         "We respect your privacy. Unsubscribe at any time.",
+                                  //     style: TextStyle(fontSize: 18, color: color7),
+                                  //   ),
+                                  // ),
+                                  // SizedBox(
+                                  //   height: 40,
+                                  // ),
+                                  // ElevatedButton(
+                                  //     onPressed: () async {
+                                  //       unsubscribeUser(email: _emailController.text);
+                                  //     },
+                                  //     child: Text("Unsubscribe"))
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                  if (appStateManager.appLoading)
+                                    Center(child: CircularProgressIndicator()),
+                                ])))
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color9,
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 600,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    FractionallySizedBox(
+                        alignment: Alignment.center,
+                        widthFactor: .7,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  alignment: Alignment(-.2, 0),
+                                  opacity: 0.3,
+                                  image: NetworkImage(
+                                      "assets/global_warming_house_fire.jpg"),
+                                  fit: BoxFit.cover),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(25)),
+                            ),
+                            padding: EdgeInsets.all(48),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    "Our Emergency",
+                                    style: TextStyle(
+                                        fontSize: 60,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Montserrat-Regular",
+                                        color: color11),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text:
+                                          "Our climate and society is already at breaking point and our future as a society in peril. It is crucial for all of us to radically change our reliance on insustainable products!",
+                                      style: TextStyle(
+                                          fontSize: 40,
+                                          color:
+                                              Color.fromARGB(236, 139, 47, 3)),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text:
+                                          "Up to now, this has been financially impossible for most of us!",
+                                      style: TextStyle(
+                                          fontSize: 40,
+                                          color:
+                                              Color.fromARGB(236, 139, 47, 3)),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: "This ends now!",
+                                      style: TextStyle(
+                                          fontSize: 40,
+                                          color:
+                                              Color.fromARGB(236, 139, 47, 3)),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                  if (appStateManager.appLoading)
+                                    Center(child: CircularProgressIndicator()),
+                                ]))),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color9,
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 600,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    FractionallySizedBox(
+                      alignment: Alignment.center,
+                      widthFactor: .65,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "GRePT",
-                            style: TextStyle(
-                                fontSize: 60,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Montserrat-Regular",
-                                color: Color(0xFF111111)),
-                          ),
+                        children: [
                           RichText(
                             text: TextSpan(
-                              text: "Welcome to the Green Rewards Point",
-                              style: TextStyle(
-                                  fontSize: 60, color: Color(0xFF8591B0)),
-                              children: [
-                                TextSpan(
-                                    text: "🌏",
-                                    style: TextStyle(
-                                      fontSize: 60,
-                                      fontWeight: FontWeight.bold,
-                                      // color: Colors.black54
-                                    ))
-                              ],
+                              text: "What is worse?",
+                              style: TextStyle(fontSize: 60, color: color11),
                             ),
                           ),
                           SizedBox(
-                            height: 40,
+                            height: 12,
                           ),
-                          RichText(
-                            text: TextSpan(
-                              text: "",
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color.fromARGB(255, 45, 47, 50)),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        "Subscribe below for early access to ",
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: color7)),
-                                TextSpan(
-                                    text: "green discounts",
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: color10)),
-                                TextSpan(
-                                    text: " in your wallet!",
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: color7)),
-                              ],
+                          Center(
+                            child: Image.network(
+                              "assets/GRePTPitchDeck-EggVsAvocado.jpg",
+                              scale: 0.85,
+                              semanticLabel: 'egg v avocado. what is worse',
                             ),
                           ),
-                          SizedBox(
-                            height: 40,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color9,
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 600,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    FractionallySizedBox(
+                      alignment: Alignment.center,
+                      widthFactor: .65,
+                      child: Center(
+                        child: Image.network(
+                          "assets/GRePTPitchDeck-YourJourney.jpg",
+                          scale: 0.85,
+                          semanticLabel: 'User experience',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color9,
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 600,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    FractionallySizedBox(
+                      alignment: Alignment.center,
+                      widthFactor: .65,
+                      child: Center(
+                        child: Image.network(
+                          "assets/GRePTPitchDeck-WhatSetsUsApart.jpg",
+                          scale: 0.85,
+                          semanticLabel: 'Our Solution',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color9,
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 60,
+              ),
+
+              SizedBox(
+                height: 600,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    FractionallySizedBox(
+                      alignment: Alignment.centerRight,
+                      widthFactor: .65,
+                      child: Center(
+                        child: InkWell(
+                          onTap: () async {
+                            if (!await launchUrlString(vegi_site))
+                              throw 'Could not launch $vegi_site';
+                          },
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          child: Image.network(
+                            "assets/vegi-phone-splash.png",
+                            scale: 0.85,
+                            semanticLabel: 'vegi phone splash',
                           ),
-                          !appStateManager.isRegistered
-                              ? Search(
-                                  emailController: _emailController,
-                                )
-                              : Unsubscribe(
-                                  emailController: _emailController,
-                                ),
-                          // RichText(
-                          //   text: TextSpan(
-                          //     text:
-                          //         "We respect your privacy. Unsubscribe at any time.",
-                          //     style: TextStyle(fontSize: 18, color: color7),
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   height: 40,
-                          // ),
-                          // ElevatedButton(
-                          //     onPressed: () async {
-                          //       unsubscribeUser(email: _emailController.text);
-                          //     },
-                          //     child: Text("Unsubscribe"))
-                          SizedBox(
-                            height: 40,
-                          ),
-                          if (appStateManager.appLoading)
-                            Center(child: CircularProgressIndicator()),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(left: 12.0, top: 20),
-                          //   child: Column(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     mainAxisAlignment: MainAxisAlignment.start,
-                          //     children: [
-                          //       SizedBox(
-                          //         height: 12.0,
-                          //         child: Text("1. Spend accross brands!",
-                          //             style: listTextStyle),
-                          //       ),
-                          //       SizedBox(
-                          //         height: 12.0,
-                          //         child: Text(
-                          //             "2. Cheaper for greener products and services",
-                          //             style: listTextStyle),
-                          //       ),
-                          //       SizedBox(
-                          //           height: 12.0,
-                          //           child: Text("3. No loyalty card!",
-                          //               style: listTextStyle)),
-                          //     ],
-                          //   ),
-                          // )
-                          // child: Text("Hello")),
-                        ])))
-          ],
+                        ),
+                      ),
+                    ),
+                    FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: .3,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 48),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "Vegi - Green Points Platform",
+                              key: appStateManager.vegiKey(context),
+                              style: TextStyle(
+                                  fontSize: 60,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Montserrat-Regular",
+                                  color: color9),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                text: "the place for plant-based",
+                                style: TextStyle(
+                                    fontSize: 45, color: Color(0xFF8591B0)),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                text:
+                                    "Buy groceries, takeaways and plant-based products from independent businesses using your vegi wallet.",
+                                style: TextStyle(
+                                    fontSize: 30, color: Color(0xFF8591B0)),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 40,
+                            ),
+                            // InkWell(
+                            //   onTap: () async {
+                            //     if (!await launchUrlString(vegi_site))
+                            //       throw 'Could not launch $vegi_site';
+                            //   },
+                            //   child: Center(
+                            //     child: Image.network(
+                            //       "assets/vegi-phone-splash.png",
+                            //       scale: 0.05,
+                            //       semanticLabel: 'vegi phone splash',
+                            //     ),
+                            //   ),
+                            // ),
+                            // SizedBox(
+                            //   height: 40,
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // SizedBox(
+              //     height: 600,
+              //     child: Stack(
+              //       fit: StackFit.expand,
+              //       children: <Widget>[
+              //         FractionallySizedBox(
+              //           alignment: Alignment.centerRight,
+              //           widthFactor: .6,
+              //           // <a href="https://www.freepik.com/free-photos-vectors/people">People vector created by stories - www.freepik.com</a>
+              //           child: Image.network("assets/phone-qr.png", scale: .85),
+              //         ),
+              //         FractionallySizedBox(
+              //           alignment: Alignment.centerLeft,
+              //           widthFactor: .6,
+              //           child: Padding(
+              //             padding: EdgeInsets.only(left: 48),
+              //             child: Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               mainAxisAlignment: MainAxisAlignment.center,
+              //               children: <Widget>[
+              //                   // Padding(
+              //                   //   padding: const EdgeInsets.only(left: 12.0, top: 20),
+              //                   //   child: Column(
+              //                   //     crossAxisAlignment: CrossAxisAlignment.start,
+              //                   //     mainAxisAlignment: MainAxisAlignment.start,
+              //                   //     children: [
+              //                   //       SizedBox(
+              //                   //         height: 12.0,
+              //                   //         child: Text("1. Spend accross brands!",
+              //                   //             style: listTextStyle),
+              //                   //       ),
+              //                   //       SizedBox(
+              //                   //         height: 12.0,
+              //                   //         child: Text(
+              //                   //             "2. Cheaper for greener products and services",
+              //                   //             style: listTextStyle),
+              //                   //       ),
+              //                   //       SizedBox(
+              //                   //           height: 12.0,
+              //                   //           child: Text("3. No loyalty card!",
+              //                   //               style: listTextStyle)),
+              //                   //     ],
+              //                   //   ),
+              //                   // ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     )),
+            ],
+          ),
         ),
       );
     });
@@ -256,47 +778,265 @@ class SmallChild extends StatelessWidget {
             Text(
               "GRePT",
               style: TextStyle(
-                  fontSize: 60,
+                  fontSize: 45,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Montserrat-Regular",
-                  color: Color(0xFF111111)),
+                  color: color9),
             ),
             RichText(
               text: TextSpan(
                 text: "Welcome to the Green Rewards Point!",
-                style: TextStyle(fontSize: 60, color: Color(0xFF8591B0)),
-                children: [
-                  TextSpan(
-                      text: "",
+                style: TextStyle(fontSize: 30, color: Color(0xFF8591B0)),
+                // children: [
+                //   TextSpan(
+                //       text: "",
+                //       style: TextStyle(
+                //         fontSize: 40,
+                //         fontWeight: FontWeight.bold,
+                //         // color: Colors.black54
+                //       ))
+                // ],
+              ),
+            ),
+            !appStateManager.isRegistered
+                ? Search(
+                    emailController: _emailController,
+                    inputHint: 'Email',
+                    buttonLabel: '',
+                    onSubmit: () async {
+                      return subscribeEmail(
+                          appStateManager: appStateManager,
+                          context: context,
+                          email: _emailController.text);
+                    },
+                  )
+                : Search(
+                    emailController: _emailController,
+                    inputHint: 'Email',
+                    buttonLabel: '',
+                    onSubmit: () async {
+                      return unsubscribeEmail(
+                          appStateManager: appStateManager,
+                          context: context,
+                          email: _emailController.text);
+                    },
+                  ),
+            SizedBox(
+              height: 30,
+            ),
+            Center(
+              child: Image.network("assets/phone-qr.png", scale: 0.5),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            SizedBox(
+              height: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color9,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      alignment: Alignment(-.2, 0),
+                      opacity: 0.3,
+                      image:
+                          NetworkImage("assets/global_warming_house_fire.jpg"),
+                      fit: BoxFit.cover),
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
+                padding: EdgeInsets.all(48),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Our Emergency",
+                        style: TextStyle(
+                            fontSize: 60,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Montserrat-Regular",
+                            color: color11),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text:
+                              "Our climate and society is already at breaking point and our future as a society in peril. It is crucial for all of us to radically change our reliance on insustainable products!",
+                          style: TextStyle(
+                              fontSize: 40,
+                              color: Color.fromARGB(236, 139, 47, 3)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text:
+                              "Up to now, this has been financially impossible for most of us!",
+                          style: TextStyle(
+                              fontSize: 40,
+                              color: Color.fromARGB(236, 139, 47, 3)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: "This ends now!",
                       style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        // color: Colors.black54
-                      ))
-                ],
+                              fontSize: 40,
+                              color: Color.fromARGB(236, 139, 47, 3)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      if (appStateManager.appLoading)
+                        Center(child: CircularProgressIndicator()),
+                    ])),
+            SizedBox(
+              height: 30,
+            ),
+            SizedBox(
+              height: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color9,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            RichText(
+              text: TextSpan(
+                text: "What is worse?",
+                style: TextStyle(fontSize: 40, color: color11),
+              ),
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Center(
+              child: Image.network(
+                "assets/GRePTPitchDeck-EggVsAvocado.jpg",
+                scale: 0.85,
+                semanticLabel: 'egg v avocado. what is worse',
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            SizedBox(
+              height: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color9,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
               ),
             ),
             SizedBox(
               height: 30,
             ),
             Center(
-              child: Image.network("assets/phone-qr.png", scale: 1),
+              child: Image.network(
+                "assets/GRePTPitchDeck-YourJourney.jpg",
+                scale: 0.5,
+                semanticLabel: 'User Experience',
+              ),
             ),
-            SizedBox(
-              height: 32,
-            ),
-            !appStateManager.isRegistered
-                ? Search(
-                    emailController: _emailController,
-                  )
-                : Unsubscribe(
-                    emailController: _emailController,
-                  ),
             SizedBox(
               height: 30,
             ),
-            if (appStateManager.appLoading)
-              Center(child: CircularProgressIndicator()),
+            SizedBox(
+              height: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color9,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Center(
+              child: Image.network(
+                "assets/GRePTPitchDeck-WhatSetsUsApart.jpg",
+                scale: 0.5,
+                semanticLabel: 'Our Solution',
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            SizedBox(
+              height: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color9,
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Text(
+              "Vegi - Green Points Platform",
+              key: appStateManager.vegiKey(context),
+              style: TextStyle(
+                  fontSize: 45,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Montserrat-Regular",
+                  color: color9),
+            ),
+            RichText(
+              text: TextSpan(
+                text: "the place for plant-based",
+                style: TextStyle(fontSize: 30, color: Color(0xFF8591B0)),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            RichText(
+              text: TextSpan(
+                text:
+                    "Buy groceries, takeaways and plant-based products from independent businesses using your vegi wallet.",
+                style: TextStyle(fontSize: 20, color: Color(0xFF8591B0)),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            InkWell(
+              onTap: () async {
+                if (!await launchUrlString(vegi_site))
+                  throw 'Could not launch $vegi_site';
+              },
+              child: Center(
+                child: Image.network(
+                  "assets/vegi-phone-splash.png",
+                  scale: 0.5,
+                  semanticLabel: 'vegi phone splash',
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
           ],
         ),
       ));

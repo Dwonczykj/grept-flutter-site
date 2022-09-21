@@ -2,12 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:webapp/models/subscriber.dart';
 import 'package:webapp/models/subscription_result.dart';
 import 'package:webapp/utils/firestore_handles.dart';
+import 'package:webapp/utils/responsiveLayout.dart';
 import 'package:webapp/utils/validator.dart';
 
 class AppStateManager extends ChangeNotifier {
-  String userEmail = '';
+  // String userEmail = '';
   bool isRegistered = false;
   bool appLoading = false;
+  // bool showingVegiApp = false;
+  GlobalKey smallVegiKey;
+  GlobalKey largeVegiKey;
+
+  AppStateManager({
+    required this.smallVegiKey,
+    required this.largeVegiKey,
+  });
+
+  GlobalKey vegiKey(BuildContext context) {
+    if (ResponsiveLayout.isSmallScreen(context)) {
+      return smallVegiKey;
+    } else if (ResponsiveLayout.isLargeScreen(context)) {
+      return largeVegiKey;
+    } else {
+      return largeVegiKey;
+    }
+  }
 
   Future<SubscriptionResult> subscribeUser({
     required String email,
@@ -17,39 +36,46 @@ class AppStateManager extends ChangeNotifier {
       return SubscriptionResult(email: email, error: valid);
     }
 
-    userEmail = email;
+    final userEmail = email.toLowerCase().trim();
     try {
       final subscriberExistsSnapshot = await subscribers_collection()
-          .where('email', isEqualTo: email.toLowerCase())
+          .where('email', isEqualTo: userEmail)
           .get();
 
       if (subscriberExistsSnapshot.size > 0) {
         isRegistered = true;
-        return SubscriptionResult.userAlreadyExists(email);
+        return SubscriptionResult.userAlreadyExists(userEmail);
       }
-
-      final addSubscriber = await subscribers_collection()
-          .add(Subscriber(email: email.toLowerCase()).toJson());
     } catch (err) {
-      print('Error: $err');
+      print('Error checking for existing emails: $err');
+    }
+
+    try {
+      final addSubscriber = await subscribers_collection()
+          .add(Subscriber(email: userEmail).toJson());
+    } catch (err) {
+      //TODO-SENTRY Logging
+      print('Error adding subscriber: $err');
+      isRegistered = false;
+      return SubscriptionResult(error: '$err', email: userEmail);
     }
 
     isRegistered = true;
 
-    return SubscriptionResult(email: email.toLowerCase());
+    return SubscriptionResult(email: userEmail);
   }
 
   Future<SubscriptionResult> unsubscribeUser({
     required String email,
   }) async {
+    final userEmail = email.toLowerCase().trim();
     try {
       final subscriberExistsSnapshot = await subscribers_collection()
           .where('email', isEqualTo: email.toLowerCase())
           .get();
-      userEmail = email;
       if (subscriberExistsSnapshot.size == 0) {
         isRegistered = false;
-        return SubscriptionResult.userNotSubscribed(email);
+        return SubscriptionResult.userNotSubscribed(userEmail);
       }
 
       subscriberExistsSnapshot.docs.forEach((doc) {
@@ -61,10 +87,26 @@ class AppStateManager extends ChangeNotifier {
 
     isRegistered = false;
 
-    return SubscriptionResult(email: email.toLowerCase());
+    return SubscriptionResult(email: userEmail);
   }
 
   void setLoading(bool loading) {
     appLoading = loading;
   }
+
+  void showVegi(BuildContext context) {
+    // showingVegiApp = true;
+    if (ResponsiveLayout.isSmallScreen(context) &&
+        smallVegiKey.currentContext != null) {
+      Scrollable.ensureVisible(smallVegiKey.currentContext!);
+    } else if (largeVegiKey.currentContext != null) {
+      Scrollable.ensureVisible(largeVegiKey.currentContext!);
+    }
+  }
+
+  // final smallVegiKey = GlobalKey(debugLabel: 'SmallChild-Vegi-TitleText');
+
+  // void hideVegi() {
+  //   showingVegiApp = false;
+  // }
 }
