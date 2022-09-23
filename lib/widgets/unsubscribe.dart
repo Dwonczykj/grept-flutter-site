@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegisite/state_managers/app_state_manager.dart';
@@ -70,9 +71,10 @@ class _UnsubscribeState extends State<Unsubscribe> {
                             //     await widget.dio.post(followLink, data: <String, dynamic>{
                             //   'email_address': widget.email,
                             // });
+                            assert(widget.emailController.text ==
+                                FirebaseAuth.instance.currentUser?.email);
                             final response =
-                                await appStateManager.unsubscribeUser(
-                                    email: widget.emailController.text);
+                                await appStateManager.unsubscribeUser();
                             if (response.error != '') {
                               setState(() {
                                 subscribeError = response.error;

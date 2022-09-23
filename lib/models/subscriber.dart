@@ -13,9 +13,11 @@ class Subscriber with _$Subscriber {
   @JsonSerializable()
   factory Subscriber({
     required String email,
+    required bool isVerified,
   }) = _Subscriber;
 
   factory Subscriber.initial() => Subscriber(
         email: '',
+        isVerified: false,
       );
 }

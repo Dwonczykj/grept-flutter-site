@@ -21,6 +21,7 @@ Subscriber _$SubscriberFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Subscriber {
   String get email => throw _privateConstructorUsedError;
+  bool get isVerified => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -33,7 +34,7 @@ abstract class $SubscriberCopyWith<$Res> {
   factory $SubscriberCopyWith(
           Subscriber value, $Res Function(Subscriber) then) =
       _$SubscriberCopyWithImpl<$Res>;
-  $Res call({String email});
+  $Res call({String email, bool isVerified});
 }
 
 /// @nodoc
@@ -47,12 +48,17 @@ class _$SubscriberCopyWithImpl<$Res> implements $SubscriberCopyWith<$Res> {
   @override
   $Res call({
     Object? email = freezed,
+    Object? isVerified = freezed,
   }) {
     return _then(_value.copyWith(
       email: email == freezed
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
+      isVerified: isVerified == freezed
+          ? _value.isVerified
+          : isVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -64,7 +70,7 @@ abstract class _$$_SubscriberCopyWith<$Res>
           _$_Subscriber value, $Res Function(_$_Subscriber) then) =
       __$$_SubscriberCopyWithImpl<$Res>;
   @override
-  $Res call({String email});
+  $Res call({String email, bool isVerified});
 }
 
 /// @nodoc
@@ -80,12 +86,17 @@ class __$$_SubscriberCopyWithImpl<$Res> extends _$SubscriberCopyWithImpl<$Res>
   @override
   $Res call({
     Object? email = freezed,
+    Object? isVerified = freezed,
   }) {
     return _then(_$_Subscriber(
       email: email == freezed
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
+      isVerified: isVerified == freezed
+          ? _value.isVerified
+          : isVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -94,17 +105,19 @@ class __$$_SubscriberCopyWithImpl<$Res> extends _$SubscriberCopyWithImpl<$Res>
 
 @JsonSerializable()
 class _$_Subscriber extends _Subscriber {
-  _$_Subscriber({required this.email}) : super._();
+  _$_Subscriber({required this.email, required this.isVerified}) : super._();
 
   factory _$_Subscriber.fromJson(Map<String, dynamic> json) =>
       _$$_SubscriberFromJson(json);
 
   @override
   final String email;
+  @override
+  final bool isVerified;
 
   @override
   String toString() {
-    return 'Subscriber(email: $email)';
+    return 'Subscriber(email: $email, isVerified: $isVerified)';
   }
 
   @override
@@ -112,13 +125,17 @@ class _$_Subscriber extends _Subscriber {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Subscriber &&
-            const DeepCollectionEquality().equals(other.email, email));
+            const DeepCollectionEquality().equals(other.email, email) &&
+            const DeepCollectionEquality()
+                .equals(other.isVerified, isVerified));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(email));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(email),
+      const DeepCollectionEquality().hash(isVerified));
 
   @JsonKey(ignore: true)
   @override
@@ -134,7 +151,9 @@ class _$_Subscriber extends _Subscriber {
 }
 
 abstract class _Subscriber extends Subscriber {
-  factory _Subscriber({required final String email}) = _$_Subscriber;
+  factory _Subscriber(
+      {required final String email,
+      required final bool isVerified}) = _$_Subscriber;
   _Subscriber._() : super._();
 
   factory _Subscriber.fromJson(Map<String, dynamic> json) =
@@ -142,6 +161,8 @@ abstract class _Subscriber extends Subscriber {
 
   @override
   String get email;
+  @override
+  bool get isVerified;
   @override
   @JsonKey(ignore: true)
   _$$_SubscriberCopyWith<_$_Subscriber> get copyWith =>

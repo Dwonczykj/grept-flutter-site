@@ -38,7 +38,7 @@ class _SendBtnState extends State<SendBtn> {
             print('Parent INK Tapped...');
           },
           child: Container(
-            height: 40,
+            // height: 40,
             decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
                   color6,
@@ -100,11 +100,11 @@ class _SendBtnState extends State<SendBtn> {
                             : ResponsiveLayout.isMediumScreen(context)
                                 ? 12
                                 : 30,
-                        height: ResponsiveLayout.isSmallScreen(context)
-                            ? 12
-                            : ResponsiveLayout.isMediumScreen(context)
-                                ? 12
-                                : 30,
+                        // height: ResponsiveLayout.isSmallScreen(context)
+                        //     ? 12
+                        //     : ResponsiveLayout.isMediumScreen(context)
+                        //         ? 12
+                        //         : 30,
                       )
                     ],
                   ),

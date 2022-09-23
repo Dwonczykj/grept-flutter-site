@@ -7,6 +7,10 @@ enum StoreType {
 
 const String slackApi = 'https://slack.com/api/';
 
+const androidPackageName =
+    'com.vegi.vegi-site'; // taken from android/app/build.gradle.defaultDependencies
+const vegiAppSiteUrl = 'https://vegiapp.co.uk';
+
 const String rootRouteName = 'root';
 const String cartRouteName = 'cart';
 const String createAccountRouteName = 'create-account';
@@ -27,3 +31,6 @@ const String shoppingRouteName = 'shopping';
 const String signinInfoRouteName = 'signin';
 const String download_vegi_appstore_path = 'download-vegi-appstore';
 const String download_vegi_playstore_path = 'download-vegi-playstore';
+const String finishSignUp = 'finishSignUp';
+const vegiEatRoute = 'vegi-eats';
+const vegiPayRoute = 'vegi-pay';

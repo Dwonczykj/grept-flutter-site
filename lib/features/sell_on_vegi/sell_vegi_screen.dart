@@ -24,13 +24,16 @@ class SellVegiScreen extends StatelessWidget {
                               // height: 200,
                               width: viewWidth * (isLargeScreen ? 0.45 : 0.9),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding:
+                                    EdgeInsets.all(isLargeScreen ? 16.0 : 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.start,
                                   children: [
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 40 : 30),
                                       padding: const EdgeInsets.all(4.0),
                                       child: Text(
                                         'Shop vegan on vegi',
@@ -41,13 +44,16 @@ class SellVegiScreen extends StatelessWidget {
                                             fontFamilyFallback: [
                                               "Montserrat-Regular"
                                             ],
-                                            color: Color(0xFF111111)),
+                                            color: themeShade1000),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 4, 4, 0),
                                       child: RichText(
+                                        textAlign: TextAlign.justify,
                                         text: TextSpan(
                                           text: '',
                                           style: TextStyle(
@@ -79,7 +85,9 @@ class SellVegiScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 2, 4, 0),
                                       child: ConstrainedBox(
@@ -87,6 +95,7 @@ class SellVegiScreen extends StatelessWidget {
                                             BoxConstraints(minWidth: 28),
                                         child: IntrinsicWidth(
                                           child: RichText(
+                                            textAlign: TextAlign.justify,
                                             text: TextSpan(
                                               text: '',
                                               style: TextStyle(
@@ -115,7 +124,9 @@ class SellVegiScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 2, 4, 0),
                                       child: ConstrainedBox(
@@ -149,14 +160,17 @@ class SellVegiScreen extends StatelessWidget {
                               // height: 200,
                               width: viewWidth * (isLargeScreen ? 0.45 : 0.9),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding:
+                                    EdgeInsets.all(isLargeScreen ? 16.0 : 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.start,
                                   children: [
-                                    Padding(
+                                    Container(
                                       padding: const EdgeInsets.all(4.0),
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 40 : 30),
                                       child: Text(
                                         'Sell vegan on vegi',
                                         style: TextStyle(
@@ -166,10 +180,12 @@ class SellVegiScreen extends StatelessWidget {
                                             fontFamilyFallback: [
                                               "Montserrat-Regular"
                                             ],
-                                            color: Color(0xFF111111)),
+                                            color: themeShade1000),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 4, 4, 0),
                                       child: Text(
@@ -184,7 +200,9 @@ class SellVegiScreen extends StatelessWidget {
                                             color: Color(0xFF111111)),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 2, 4, 0),
                                       child: ConstrainedBox(
@@ -205,7 +223,9 @@ class SellVegiScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 2, 4, 0),
                                       child: ConstrainedBox(
@@ -226,10 +246,13 @@ class SellVegiScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Padding(
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: isLargeScreen ? 20 : 10),
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 2, 4, 0),
                                       child: RichText(
+                                        textAlign: TextAlign.justify,
                                         text: TextSpan(
                                           text: '',
                                           style: TextStyle(
@@ -282,7 +305,8 @@ class SellVegiScreen extends StatelessWidget {
                               // height: 200,
                               width: viewWidth * (isLargeScreen ? 0.45 : 0.9),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding:
+                                    EdgeInsets.all(isLargeScreen ? 16.0 : 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:
@@ -306,6 +330,7 @@ class SellVegiScreen extends StatelessWidget {
                                       padding:
                                           const EdgeInsets.fromLTRB(4, 4, 4, 0),
                                       child: RichText(
+                                        textAlign: TextAlign.justify,
                                         text: TextSpan(
                                           text: '',
                                           style: TextStyle(
@@ -345,6 +370,7 @@ class SellVegiScreen extends StatelessWidget {
                                             BoxConstraints(minWidth: 28),
                                         child: IntrinsicWidth(
                                           child: RichText(
+                                            textAlign: TextAlign.justify,
                                             text: TextSpan(
                                               text: '',
                                               style: TextStyle(
@@ -407,7 +433,8 @@ class SellVegiScreen extends StatelessWidget {
                               // height: 200,
                               width: viewWidth * (isLargeScreen ? 0.45 : 0.9),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding:
+                                    EdgeInsets.all(isLargeScreen ? 16.0 : 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:

@@ -34,11 +34,11 @@ class _SearchState extends State<Search> {
           padding: EdgeInsets.only(
             left: 4.0,
             right: ResponsiveLayout.isSmallScreen(context) ? 4 : 130,
-            top: 10,
-            bottom: 40,
+            top: 0,
+            bottom: 0,
           ),
           child: Container(
-              height: 60,
+              height: 48,
               decoration: BoxDecoration(
                   color: color4,
                   borderRadius: BorderRadius.circular(30),
@@ -50,39 +50,42 @@ class _SearchState extends State<Search> {
                   ]),
               child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 8,
-                        child: TextField(
-                          decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: widget.inputHint,
-                              errorStyle: TextStyle(
-                                color: Color.fromARGB(255, 244, 14, 14),
-                              ),
-                              errorText: subscribeError),
-                          controller: widget.emailController,
+                  child: Container(
+                    // color: Colors.blue,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 8,
+                          child: TextField(
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: widget.inputHint,
+                                errorStyle: TextStyle(
+                                  color: Color.fromARGB(255, 244, 14, 14),
+                                ),
+                                errorText: subscribeError),
+                            controller: widget.emailController,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: SendBtn(
-                          disabled:
-                              false, //(widget.emailController.text == ""),
-                          label: ResponsiveLayout.isSmallScreen(context)
-                              ? ''
-                              : widget.buttonLabel,
-                          onTap: () async {
-                            final error = await widget.onSubmit();
-                            setState(() async {
-                              subscribeError = error;
-                            });
-                          },
+                        Expanded(
+                          flex: 2,
+                          child: SendBtn(
+                            disabled:
+                                false, //(widget.emailController.text == ""),
+                            label: ResponsiveLayout.isSmallScreen(context)
+                                ? ''
+                                : widget.buttonLabel,
+                            onTap: () async {
+                              final error = await widget.onSubmit();
+                              setState(() async {
+                                subscribeError = error;
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ))));
     });
   }

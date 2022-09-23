@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vegisite/models/subscription_result.dart';
@@ -26,7 +27,8 @@ Future<String> unsubscribeEmail(
       context: context,
       email: email,
       submit: () async {
-        return appStateManager.unsubscribeUser(email: email);
+        assert(email == FirebaseAuth.instance.currentUser?.email);
+        return appStateManager.unsubscribeUser();
       });
 }
 
