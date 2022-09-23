@@ -1,5 +1,5 @@
-name: webapp
-description: GRePT - Green Rewards Platform
+name: vegisite
+description: vegi Green Rewards Platform
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -41,6 +41,12 @@ dependencies:
   another_flushbar: ^1.10.29
   ansicolor: ^2.0.1
   go_router: ^5.0.0
+  flex_color_scheme: ^6.0.1
+  shared_preferences: ^2.0.15
+  zendesk_flutter_plugin: ^1.0.2
+  zendesk_plugin: ^2.0.0
+  animations: ^2.0.5
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   auto_route_generator: ^4.2.0
@@ -61,6 +67,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - environment/.env
+   
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

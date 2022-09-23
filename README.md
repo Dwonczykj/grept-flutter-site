@@ -1,4 +1,4 @@
-# webapp
+# vegisite
 
 A landing page for the GRePT Green Rewards Platform
 

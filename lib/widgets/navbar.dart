@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:webapp/common/links.dart';
-import 'package:webapp/state_managers/app_state_manager.dart';
-import 'package:webapp/utils/colors_palette.dart';
-import 'package:webapp/utils/responsiveLayout.dart';
+import 'package:vegisite/common/links.dart';
+import 'package:vegisite/state_managers/app_state_manager.dart';
+import 'package:vegisite/utils/colors_palette.dart';
+import 'package:vegisite/utils/responsiveLayout.dart';
 
 class NavBar extends StatelessWidget {
   // Navigation Bar Items
@@ -100,35 +100,41 @@ class NavBar extends StatelessWidget {
                     child: Container(
                       width: 60,
                       height: 60,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          gradient: LinearGradient(
-                              colors: [
-                                color9,
-                                color2,
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter)),
+                      // decoration: BoxDecoration(
+                      //   borderRadius: BorderRadius.circular(5),
+                      //   gradient: LinearGradient(
+                      //       colors: [
+                      //         color9,
+                      //         color2,
+                      //       ],
+                      //       begin: Alignment.bottomCenter,
+                      //       end: Alignment.topCenter)
+                      // ),
                       child: Center(
                           // child: Image.network("assets/Vegi-Logo-square.png",
                           //     width: 50, height: 50)
-                          child: CachedNetworkImage(
-                        imageUrl:
-                            "https://is1-ssl.mzstatic.com/image/thumb/Purple112/v4/9b/cc/cf/9bcccff4-6adb-f3f5-e339-5939b5289025/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/460x0w.webp",
-                        width: 50,
-                        height: 50,
-                        imageBuilder: (context, imageProvider) => Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
+                          child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              "https://is1-ssl.mzstatic.com/image/thumb/Purple112/v4/9b/cc/cf/9bcccff4-6adb-f3f5-e339-5939b5289025/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/460x0w.webp",
+                          width: 50,
+                          height: 50,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
                                 image: imageProvider,
                                 fit: BoxFit.cover,
-                                colorFilter: ColorFilter.mode(
-                                    Colors.red, BlendMode.colorBurn)),
+                                // colorFilter: ColorFilter.mode(
+                                //     Colors.red, BlendMode.colorBurn)
+                              ),
+                            ),
                           ),
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
                       )
                           // child: Text(
                           //   "",

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:webapp/state_managers/app_state_manager.dart';
-import 'package:webapp/utils/colors_palette.dart';
+import 'package:vegisite/state_managers/app_state_manager.dart';
+import 'package:vegisite/utils/colors_palette.dart';
 
 import '../utils/responsiveLayout.dart';
 import 'sendbtn.dart';

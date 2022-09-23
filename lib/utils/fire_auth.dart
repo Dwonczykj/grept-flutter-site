@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:webapp/firebase_options.dart';
+import 'package:vegisite/firebase_options.dart';
 
 class FireAuth {
   // For registering a new user
@@ -82,19 +82,25 @@ class FireAuth {
     return user;
   }
 
-  static Future<FirebaseApp> initializeFirebase() async {
-    // final firebaseConfig = DefaultFirebaseConfig.platformOptions;
-    final firebaseConfig = DefaultFirebaseOptions.currentPlatform;
-    FirebaseApp firebaseApp =
-        await Firebase.initializeApp(options: firebaseConfig);
-
+  static Future<User?> firebaseSignIn() async {
     try {
-      final user = await FireAuth.signInAnonymously(); //TODO: Set to Bloc state
+      final user = await FireAuth.signInAnonymously();
 
-      return firebaseApp;
+      return user;
     } catch (err) {
       print('Error (Unable to signin to firebase anon): $err');
     }
-    return firebaseApp;
+    return null;
+  }
+
+  static Future<User?> initializeFirebaseAndSignIn() async {
+    await initializeFirebaseApp();
+    return firebaseSignIn();
+  }
+
+  static Future<FirebaseApp> initializeFirebaseApp() async {
+    // final firebaseConfig = DefaultFirebaseConfig.platformOptions;
+    final firebaseConfig = DefaultFirebaseOptions.currentPlatform;
+    return await Firebase.initializeApp(options: firebaseConfig);
   }
 }

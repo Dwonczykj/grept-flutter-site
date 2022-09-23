@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:webapp/models/subscriber.dart';
-import 'package:webapp/models/subscription_result.dart';
-import 'package:webapp/utils/firestore_handles.dart';
-import 'package:webapp/utils/responsiveLayout.dart';
-import 'package:webapp/utils/validator.dart';
+import 'package:vegisite/models/subscriber.dart';
+import 'package:vegisite/models/subscription_result.dart';
+import 'package:vegisite/services/services.dart';
+import 'package:vegisite/utils/firestore_handles.dart';
+import 'package:vegisite/utils/responsiveLayout.dart';
+import 'package:vegisite/utils/validator.dart';
 
 class AppStateManager extends ChangeNotifier {
   // String userEmail = '';
@@ -28,6 +29,10 @@ class AppStateManager extends ChangeNotifier {
     }
   }
 
+  Future<void> sendSlackMessage(String message) async {
+    return slackMessagingService.sendMessage(message);
+  }
+
   Future<SubscriptionResult> subscribeUser({
     required String email,
   }) async {
@@ -44,10 +49,12 @@ class AppStateManager extends ChangeNotifier {
 
       if (subscriberExistsSnapshot.size > 0) {
         isRegistered = true;
+        sendSlackMessage("New User: $userEmail registered to mailing list.");
         return SubscriptionResult.userAlreadyExists(userEmail);
       }
     } catch (err) {
-      print('Error checking for existing emails: $err');
+      print(
+          'Error checking for existing emails: $err'); //REMOVE THE ZENDESK PLUGIN IF FIREBASE PLATFORM NOT WEB
     }
 
     try {

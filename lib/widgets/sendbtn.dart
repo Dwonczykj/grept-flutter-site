@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webapp/utils/colors_palette.dart';
+import 'package:vegisite/utils/colors_palette.dart';
 
 import '../utils/responsiveLayout.dart';
 

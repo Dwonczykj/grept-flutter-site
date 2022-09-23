@@ -5,14 +5,12 @@ class ResponsiveLayout extends StatelessWidget {
   final Widget? mediumScreen;
   final Widget? smallScreen;
 
-  const ResponsiveLayout(
-      {
+  const ResponsiveLayout({
     Key? key,
     required this.largeScreen,
     this.mediumScreen,
     required this.smallScreen,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   static bool isSmallScreen(BuildContext context) {
     return MediaQuery.of(context).size.width < 800;
@@ -40,5 +38,27 @@ class ResponsiveLayout extends StatelessWidget {
         }
       },
     );
+  }
+}
+
+class ResponsiveLayoutBuilder extends StatefulWidget {
+  const ResponsiveLayoutBuilder({Key? key, required this.responsiveBuilder})
+      : super(key: key);
+
+  final ResponsiveWidgetBuilder responsiveBuilder;
+
+  @override
+  State<ResponsiveLayoutBuilder> createState() =>
+      _ResponsiveLayoutBuilderState();
+}
+
+typedef ResponsiveWidgetBuilder = Widget Function(
+    BuildContext context, bool isLargeScreen);
+
+class _ResponsiveLayoutBuilderState extends State<ResponsiveLayoutBuilder> {
+  @override
+  Widget build(BuildContext context) {
+    return widget.responsiveBuilder(
+        context, ResponsiveLayout.isLargeScreen(context));
   }
 }
