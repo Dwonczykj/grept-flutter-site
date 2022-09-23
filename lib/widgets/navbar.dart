@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +19,20 @@ class NavBar extends StatelessWidget {
     "sell on vegi": "sell-on-vegi",
     "get vegi": "get-vegi",
     "privacy & terms": "privacy",
-    "": ""
   };
+
+  iconNavLinks(BuildContext context) => <Widget>[
+        _navBarIcon(context, 'assets/images/icons/instagram-icon.png',
+            'https://www.instagram.com/vegi_liverpool/'),
+        if (!kIsWeb && Platform.isIOS)
+          _navBarIcon(context, 'assets/images/icons/appstore2-icon.png',
+              'https://apps.apple.com/gb/app/vegi/id1608208174'),
+        if (!kIsWeb && Platform.isAndroid)
+          _navBarIcon(
+              context,
+              'assets/images/icons/googleplaystore-outline-icon.png',
+              'https://play.google.com/store/apps/details?id=com.vegi.vegiapp'),
+      ];
 
   List<Widget> navItem(BuildContext context) {
     return navLinks
@@ -41,10 +56,36 @@ class NavBar extends StatelessWidget {
               ));
         })
         .values
-        .toList();
+        .toList()
+      ..addAll(iconNavLinks(context));
   }
 
   final dio = Dio();
+
+  Widget _navBarIcon(BuildContext context, String imageUrl, String navLink) =>
+      Container(
+        margin: EdgeInsets.only(left: 9, right: 9),
+        child: GestureDetector(
+          onTap: () => navLink.startsWith('http')
+              ? launchUrlString(navLink)
+              : GoRouter.of(context).go('/$navLink'),
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Container(
+              padding: EdgeInsets.only(left: 18),
+              height: 20,
+              width: 20,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    alignment: Alignment(-.2, 0),
+                    // opacity: 0.25,
+                    image: NetworkImage(imageUrl),
+                    fit: BoxFit.cover),
+              ),
+            ),
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {

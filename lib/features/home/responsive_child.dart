@@ -415,7 +415,7 @@ class LargeChild extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "Vegi - Green Points Platform",
+                              "vegi",
                               key: appStateManager.vegiKey(context),
                               style: TextStyle(
                                   fontSize: 60,
@@ -757,7 +757,7 @@ class SmallChild extends StatelessWidget {
             //   height: 30,
             // ),
             Text(
-              "Vegi - Green Points Platform",
+              "vegi",
               key: appStateManager.vegiKey(context),
               style: TextStyle(
                   fontSize: 45,
